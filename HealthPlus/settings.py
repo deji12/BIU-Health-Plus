@@ -47,6 +47,9 @@ INSTALLED_APPS = [
 
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
+
+
 ]
 
 MIDDLEWARE = [
@@ -225,3 +228,4 @@ SIMPLE_JWT = {
 }
 
 DEFAULT_USER_PROFILE_IMAGE = config('DEFAULT_USER_PROFILE_IMAGE')
+SWAGGER_DOCS_BASE_URL = config('SWAGGER_DOCS_BASE_URL')
