@@ -5,17 +5,21 @@ from django.contrib.auth.models import (
 )
 from cloudinary.models import CloudinaryField
 from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
 
 class UserType:
-    STUDENT = 'STUDENT'
-    DOCTOR = 'DOCTOR'
-    NURSE = 'NURSE'
-    PHARMACIST = 'PHARMACIST'
+    STUDENT = 'student'
+    DOCTOR = 'doctor'
+    NURSE = 'nurse'
+    PHARMACIST = 'pharmacist'
+    ADMIN = 'admin'
 
 USER_TYPE_CHOICES = [
     (UserType.DOCTOR, UserType.DOCTOR),
     (UserType.NURSE, UserType.NURSE),
-    (UserType.STUDENT, UserType.STUDENT)
+    (UserType.STUDENT, UserType.STUDENT),
+    (UserType.ADMIN, UserType.ADMIN)
 ]
 
 class CustomUserManager(BaseUserManager):
@@ -64,3 +68,22 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return f"{self.first_name} {self.middle_name} {self.last_name}"
+
+    def auth_tokens(self):
+        refresh = RefreshToken.for_user(self)
+
+        # update last login date
+        self.last_login = timezone.now()
+        self.save()
+        
+        return {
+            "access": str(refresh.access_token),
+            "refresh": str(refresh)
+        }
+
+    def user_profile_image(self):
+    
+        if self.profile_image:
+            return self.profile_image.url
+        
+        return settings.DEFAULT_USER_PROFILE_IMAGE
