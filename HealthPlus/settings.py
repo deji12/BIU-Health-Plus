@@ -15,6 +15,7 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 import dj_database_url
+import cloudinary
 from corsheaders.defaults import default_methods, default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,6 +32,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
+PRODUCTION = config('PRODUCTION', cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 CORS_ALLOW_METHODS = list(default_methods)
@@ -106,7 +108,8 @@ DATABASES = {
     }
 }
 
-# DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
+if PRODUCTION:
+    DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
 
 
 # Password validation
@@ -248,3 +251,9 @@ DEFAULT_USER_PROFILE_IMAGE = config('DEFAULT_USER_PROFILE_IMAGE')
 SWAGGER_DOCS_BASE_URL = config('SWAGGER_DOCS_BASE_URL')
 
 DEFAULT_STAFF_PASSWORD = config('DEFAULT_STAFF_PASSWORD')
+
+cloudinary.config(
+    cloud_name = config('CLOUDINARY_CLOUD_NAME'),
+    api_key = config('CLOUDINARY_API_KEY'),
+    api_secret = config('CLOUDINARY_API_SECRET')
+)
