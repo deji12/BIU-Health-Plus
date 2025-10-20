@@ -4,8 +4,8 @@ from import_export.admin import ImportExportModelAdmin
 
 class UserAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = [
-        'matric_number', 'first_name', 'last_name', 'user_type',
-        'date_joined' 
+        'first_name', 'last_name', 'matric_number', 'staff_id', 
+        'user_type', 'verified_staff', 'date_joined' 
     ]
 
     list_filter = [

@@ -81,7 +81,7 @@ ROOT_URLCONF = 'HealthPlus.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -106,7 +106,7 @@ DATABASES = {
     }
 }
 
-DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
+# DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
 
 
 # Password validation
@@ -192,6 +192,7 @@ JAZZMIN_UI_TWEAKS = {
 JAZZMIN_SETTINGS = {
     "topmenu_links": [
         {"app": "User"},
+        {"name": "Register Staff",  "url": "user:register_staff", "new_window": True},
     ],
     "show_ui_builder": False,
     "copyright": "Health Plus",
@@ -245,3 +246,5 @@ SIMPLE_JWT = {
 
 DEFAULT_USER_PROFILE_IMAGE = config('DEFAULT_USER_PROFILE_IMAGE')
 SWAGGER_DOCS_BASE_URL = config('SWAGGER_DOCS_BASE_URL')
+
+DEFAULT_STAFF_PASSWORD = config('DEFAULT_STAFF_PASSWORD')

@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <style>
+    .form-container {
+      max-width: 500px;
+      width: 100%;
+    }
+    .full-height {
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container full-height d-flex flex-column justify-content-center align-items-center">
+  
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success" role="alert" id="alert-message">
+                {{message}}
+                </div>
+            {% else %}
+                <div class="alert alert-danger" role="alert" id="alert-message">
+                {{message}}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <p class="h2">Register Staff</p>
+    <div class="form-container scrollable">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3 mt-3">
+          <label for="first_name" class="form-label">First name:</label>
+          <input type="text" class="form-control" id="first_name" placeholder="Enter your first name" name="first_name" required>
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="last_name" class="form-label">Last name:</label>
+          <input type="text" class="form-control" id="last_name" placeholder="Enter your last name" name="last_name" required>
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="staff_id" class="form-label">Staff ID:</label>
+          <input type="text" class="form-control" id="staff_id" placeholder="Enter your staff id" name="staff_id" required>
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="staff_id_img" class="form-label">Staff ID Image:</label>
+          <input type="file" class="form-control" id="staff_id_img" placeholder="Enter your staff ID image" name="staff_id_img">
+        </div>
+        <div class="mb-3 mt-3">
+            <label for="staff_type" class="form-label">Staff Type:</label>
+            <select class="form-control form-select" id="staff_type" name="staff_type">
+              <option value="" disabled selected>Select Staff Type</option>
+              {% for type in user_types %}
+                  <option value="{{type}}">{{type}}</option>
+              {% endfor %}
+            </select>
+        </div>
+       
+    
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+      </form>
+    </div>  
+
+</div>
+<style>
+    .scrollable {
+        max-height: 500px; /* Set the maximum height for the scrollable area */
+        overflow-y: auto; /* Enable vertical scrolling */
+        width: 100%;
+        
+    }
+</style>
+<script>
+    // Hide the alert message after 5 seconds
+    setTimeout(function() {
+        var alertMessage = document.getElementById('alert-message');
+        if (alertMessage) {
+            alertMessage.style.display = 'none';
+        }
+    }, 10000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

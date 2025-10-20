@@ -2,11 +2,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from .models import User
-from django.contrib.auth import authenticate
+from .models import User, UserType
+from Utils.user import authenticate
 from .serializers import StudentSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.http import HttpResponse
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.conf import settings 
 
 @swagger_auto_schema(
     method="post",
@@ -176,6 +180,7 @@ def register_student(request):
         },
         example={
             "matric_number": "CSC/20/1234",
+            "staff_id": "1234", 
             "password": "secret123"
         }
     ),
@@ -239,15 +244,19 @@ def register_student(request):
 def login_user(request):
     
     matric_number = request.data.get('matric_number')
+    staff_id = request.data.get('staff_id')
     password = request.data.get('password')
 
-    if not (matric_number and password):
+    if not ((matric_number or staff_id) and password):
         return Response({
             "status": False,
-            "message": "matric number and password are required"
+            "message": "matric number or staff ID and password are required"
         }, status=status.HTTP_400_BAD_REQUEST)
     
-    user = authenticate(username=matric_number, password=password)
+    if matric_number:
+        user = authenticate(matric_number=matric_number, password=password)
+    if staff_id:
+        user = authenticate(staff_id=staff_id, password=password)
 
     if user is None:
         return Response({
@@ -270,3 +279,46 @@ def login_user(request):
             "tokens": user.auth_tokens()
         }
     }, status=status.HTTP_200_OK)
+
+def register_staff(request):
+    if not request.user.is_superuser:
+        return HttpResponse("403 Forbidden")
+    
+    user_types = UserType.list()
+
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        staff_id = request.POST.get('staff_id')
+        staff_id_image = request.FILES.get('staff_id_img')
+        staff_type = request.POST.get('staff_type')
+
+        if not (first_name and last_name and staff_id and staff_type):
+            messages.error(request, 'All fields are required')
+            return redirect('register_staff')
+        
+        if staff_type not in user_types:
+            messages.error(request, 'Invalid staff type entered')
+            return redirect('register_staff')
+        
+        new_user = User.objects.create_user(
+            first_name = first_name,
+            last_name = last_name,
+            staff_id = staff_id,
+            user_type = staff_type,
+            password = settings.DEFAULT_STAFF_PASSWORD,
+            is_staff = True
+        )
+
+        if staff_id_image:
+            new_user.staff_id_img = staff_id_image
+            new_user.save()
+
+        messages.success(request, 'Staff created succesfully with default password')
+        return redirect('register_staff')
+    
+    context = {
+        'user_types': user_types
+    }
+
+    return render(request, 'register_staff.html', context)
