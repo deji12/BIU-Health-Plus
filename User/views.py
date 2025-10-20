@@ -29,6 +29,7 @@ from drf_yasg import openapi
         properties={
             "matric_number": openapi.Schema(type=openapi.TYPE_STRING, description="Unique matric number of the student."),
             "first_name": openapi.Schema(type=openapi.TYPE_STRING, description="First name of the student."),
+            "middle_name": openapi.Schema(type=openapi.TYPE_STRING, description="Middle name of the student."),
             "last_name": openapi.Schema(type=openapi.TYPE_STRING, description="Last name of the student."),
             "serial_number": openapi.Schema(type=openapi.TYPE_INTEGER, description="Student’s serial number (optional)."),
             "password": openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_PASSWORD, description="Student's password."),
@@ -37,6 +38,7 @@ from drf_yasg import openapi
         example={
             "matric_number": "CSC/20/1234",
             "first_name": "John",
+            "middle_name": "Samson",
             "last_name": "Doe",
             "serial_number": 56,
             "password": "secret123",
@@ -53,7 +55,7 @@ from drf_yasg import openapi
                     "user": {
                         "matric_number": "CSC/20/1234",
                         "first_name": "John",
-                        "middle_name": "",
+                        "middle_name": "Samson",
                         "last_name": "Doe",
                         "user_type": "student",
                         "serial_number": 56,
@@ -102,6 +104,7 @@ def register_student(request):
 
     matric_number = request.data.get('matric_number')
     first_name = request.data.get('first_name')
+    middle_name = request.data.get('middle_name')
     last_name = request.data.get('last_name')
     serial_number = request.data.get('serial_number')
     password = request.data.get('password')
@@ -134,6 +137,9 @@ def register_student(request):
     if not serial_number:
         last_created_user = User.objects.first()
         serial_number = last_created_user.serial_number
+
+    if middle_name:
+        new_user.middle_name = middle_name
    
     new_user.serial_number = serial_number
     new_user.save()
